@@ -1,0 +1,58 @@
+#prerequities
+setwd("C:/Users/icssu/OneDrive/Desktop/Session 1 Resources 7-14-23")
+library(tidyverse)
+library(readr)
+library(tidymodels)
+AD <- readr::read_csv("alzheimer_data.csv")
+# sets the rng state (you can use any number you want)
+set.seed(1738) 
+# prop is the proportion of data for the training dataset
+data_split <- initial_split(AD_subset, prop = 0.7) 
+train_data <- training(data_split)
+test_data <- testing(data_split)
+
+
+
+
+#wrangling
+AD_subset <- AD %>% 
+  select(diagnosis, ltempcor, rtempcor, animals, traila, trailb, naccmmse, payattn, events) %>% 
+  filter(diagnosis != 1) %>% 
+  mutate(hasAD = as.factor(ifelse(diagnosis == 2, 1, 0)))
+
+AD_subset <- AD_subset %>% 
+  mutate(events_trouble = as.factor(ifelse(events > 0, 1, 0)))
+
+head(AD_subset)
+
+#model using data split
+
+
+
+#visualization
+AD_subset %>% 
+  select(hasAD, rtempcor) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = hasAD, y = rtempcor)) +
+  labs(x = "Alzheimer's Diagnosis", y = "Right Temporal Lobe") +
+  scale_x_discrete(breaks = c(0, 1), 
+                   labels = c("No AD", "Has AD"))
+
+ggplot(data = AD_subset,
+       aes(x = hasAD,
+           fill = events_trouble)) +
+  geom_bar(
+    position = "dodge"
+  ) +
+  scale_x_discrete(breaks = c(0, 1), 
+                   labels = c("No AD", "Has AD"))
+AD_subset %>% 
+  ggplot() + 
+  geom_point(aes(x = ltempcor,
+                 y = animals,
+                 color = hasAD))
+
+
+
+#hypothesis testing
+t.test(ltempcor ~ hasAD, AD_subset)
