@@ -13,6 +13,7 @@ AD_subset <- AD %>%
                                       ifelse(diagnosis == 1, "MCI", "Yes"))))
 
 #datasplit
+n_total <- nrow(AD)
 n_train <- floor(n_total * 0.7)
 set.seed(1738)
 train_indices <- sample(1:n_total, n_train, 
